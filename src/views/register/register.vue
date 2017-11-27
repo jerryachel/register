@@ -58,7 +58,7 @@ export default {
   	let timer = new Date()
   	
   	setInterval(function(){
-  		 
+  		timer.getTime()+ 1000
   		console.log(timer.getTime())
   	},1000)
   },
