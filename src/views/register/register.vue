@@ -8,29 +8,27 @@
 			<ul class="register_days">
 				<li v-for="(item, index) in date">{{item}}</li>
 			</ul>
-			<label for="morning" :class="[curTime == 'morning'?'chosen':'',disabled == 1 || disabled == 3? 'disabled':'']">
+			<label for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
 					<p>早班</p>
 					<p>营业时间：8:30～11:30</p>
 					<p>剩余号数：18</p>
-					<input :disabled="disabled == 1 || disabled == 3" id="morning" type="radio" value="morning" v-model="curTime" >
+					<input :disabled="morningIsDisabled" id="morning" type="radio" value="morning" v-model="curTime" >
 				</div>
 				<img src="../../assets/images/choose.png" alt="">
 			</label>
-
-
-			<label for="afternoon" :class="[curTime == 'afternoon'?'chosen':'',disabled == 2 || disabled == 3? 'disabled':'']">
+			<label for="afternoon" :class="[curTime == 'afternoon'?'chosen':'',afternoonIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
 					<p>晚班</p>
 					<p>营业时间：18:40～21:30</p>
 					<p>剩余号数：10</p>
-					<input :disabled="disabled == 2 || disabled == 3" id="afternoon" type="radio" value="afternoon" v-model="curTime" >
+					<input :disabled="afternoonIsDisabled" id="afternoon" type="radio" value="afternoon" v-model="curTime" >
 				</div>
 				<img src="../../assets/images/choose.png" alt="">
-				
 			</label>
+			<div :class="['comfirm_btn',curTime?'comfirm_btn_active':'']">确&nbsp;&nbsp;定</div>
 		</div>
 	</div>
 </template>
@@ -44,9 +42,8 @@ export default {
     return {
       	week:[],
       	date:[],
-      	curChoose:0,
-      	curTime:'',
-      	disabled:0  //1:上午  2:晚上  3:全部
+      	curChoose:0, //选择的日期
+      	curTime:'',  //选择早班晚班
     }
   },
   mounted(){
@@ -58,10 +55,73 @@ export default {
   		this.date.push(date.getDate())
   		this.week.push(aWeek[date.getDay()])
   	}
+  	let timer = new Date()
+  	
+  	setInterval(function(){
+  		 
+  		console.log(timer.getTime())
+  	},1000)
   },
   watch:{
   	curTime(){
   		console.log(this.curTime)
+  	}
+  },
+  computed:{
+  	morningIsDisabled:function(){
+  		let now = new Date()
+  		let hours = now.getHours()
+  		let minute = now.getMinutes()
+  		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
+  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22)){  	
+			return false
+  		}else{
+  			return true
+  		}
+  	},
+  	afternoonIsDisabled:function(){
+  		let now = new Date()
+  		let hours = now.getHours()
+  		let minute = now.getMinutes()
+  		//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
+  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<=30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22) ) {
+  			return false
+  		}else{
+  			return true
+  		}
+  	},
+
+
+  	//disabled:0  //0:全部允许 1:上午  2:晚上  3:全部禁止
+  	disabled:function(){
+  		let now = new Date()
+  		let hours = now.getHours()
+  		let minute = now.getMinutes()
+
+  		let status = 0
+  		//当天
+		if(this.date[this.curChoose] == now.getDate()){
+			//9点前
+  			if(hours< 9){
+  				status = 0
+  			//9点~17点30
+  			}else if(hours>= 9 && (hours < 17 || (hours==17 && minute<=30 ))){
+  				status = 1
+  			}
+  			//17点30后
+  			else if (hours > 17 || (hours==17 && minute > 30 )){
+  				console.log(hours > 17 || (hours==17 && minute > 30 ))
+  				status = 3
+  			}
+  		//非当天 且 7~22点内
+  		}else if (hours > 7 && hours < 22){
+  			status = 0
+  		}else {
+  			status = 3
+  		}
+
+
+  		return status
   	}
   },
   methods:{
@@ -110,7 +170,7 @@ export default {
 		display: block;
 		width: 100%;
 		height: px(200);
-		border:px(4) solid #ccc;
+		border:px(2) solid #ccc;
 		font-size: px(30);
 		background-color: #f6f6f6;
 		border-radius:px(10);
@@ -157,15 +217,32 @@ export default {
 	}
 	.chosen{
 		color:#fff;
-		border:px(4) solid #6cb7f1;
+		border:px(0) solid transparent;
 		.chosen_bg{
 			opacity: 1;
 			transform:translate3d(-50%,-50%,0) scale(1);
 		}
 	}
 	.disabled{
-		background-color: #e2e0e0;
+		color: #8cc5ff;
+		background-color: #ecf5ff;
+		border-color: #d9ecff;
+	}
+	.comfirm_btn{
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: px(80);
+		text-align: center;
+		line-height: px(78);
+		background-color: #c2e7b0;
 		color: #fff;
+		font-size: px(30);	
+		transition: ease all .3s;
+	}
+	.comfirm_btn_active{
+		background-color: #67c23a;
 	}
 }
 </style>
