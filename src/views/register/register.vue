@@ -11,7 +11,7 @@
 			<label for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
-					<p>早班</p>
+					<p>早班111</p>
 					<p>营业时间：8:30～11:30</p>
 					<p>剩余号数：18</p>
 					<input :disabled="morningIsDisabled" id="morning" type="radio" value="morning" v-model="curTime" >
@@ -28,7 +28,7 @@
 				</div>
 				<img src="../../assets/images/choose.png" alt="">
 			</label>
-			<div :class="['comfirm_btn',curTime?'comfirm_btn_active':'']">确&nbsp;&nbsp;定</div>
+			<div @click="comfirm" :class="['comfirm_btn',curTime?'comfirm_btn_active':'']">确&nbsp;&nbsp;定</div>
 		</div>
 	</div>
 </template>
@@ -41,26 +41,34 @@ export default {
   data () {
     return {
       	week:[],
+      	fullDate:[],
       	date:[],
       	curChoose:0, //选择的日期
       	curTime:'',  //选择早班晚班
+      	timer:new Date()
     }
   },
-  mounted(){
+  created(){
   	let aWeek = new Array("日", "一", "二", "三", "四", "五", "六")
   	//获取未来七天
   	for(let i = 0 ;i<7;i++){
   		let date = new Date()
   		date.setDate(new Date().getDate()+i)
+  		this.fullDate.push(date.Format('yyyy-MM-dd'))
   		this.date.push(date.getDate())
   		this.week.push(aWeek[date.getDay()])
   	}
   	let timer = new Date()
-  	
-  	/*setInterval(function(){
-  		timer.getTime()+ 1000
-  		console.log(timer.getTime())
-  	},1000)*/
+  	var count = function(){
+		setTimeout(function(){
+	  		timer = new Date(timer.getTime()+1000)
+	  		this.timer = timer
+	  		console.log(this.timer)
+	  		count()
+	  	},1000)
+  	} 
+  	//count()
+  		
   },
   watch:{
   	curTime(){
@@ -69,7 +77,8 @@ export default {
   },
   computed:{
   	morningIsDisabled:function(){
-  		let now = new Date()
+  		console.log('morning')
+  		let now = this.timer
   		let hours = now.getHours()
   		let minute = now.getMinutes()
   		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
@@ -80,7 +89,7 @@ export default {
   		}
   	},
   	afternoonIsDisabled:function(){
-  		let now = new Date()
+  		let now = this.timer
   		let hours = now.getHours()
   		let minute = now.getMinutes()
   		//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
@@ -89,39 +98,6 @@ export default {
   		}else{
   			return true
   		}
-  	},
-
-
-  	//disabled:0  //0:全部允许 1:上午  2:晚上  3:全部禁止
-  	disabled:function(){
-  		let now = new Date()
-  		let hours = now.getHours()
-  		let minute = now.getMinutes()
-
-  		let status = 0
-  		//当天
-		if(this.date[this.curChoose] == now.getDate()){
-			//9点前
-  			if(hours< 9){
-  				status = 0
-  			//9点~17点30
-  			}else if(hours>= 9 && (hours < 17 || (hours==17 && minute<=30 ))){
-  				status = 1
-  			}
-  			//17点30后
-  			else if (hours > 17 || (hours==17 && minute > 30 )){
-  				console.log(hours > 17 || (hours==17 && minute > 30 ))
-  				status = 3
-  			}
-  		//非当天 且 7~22点内
-  		}else if (hours > 7 && hours < 22){
-  			status = 0
-  		}else {
-  			status = 3
-  		}
-
-
-  		return status
   	}
   },
   methods:{
@@ -130,6 +106,21 @@ export default {
   		//重置选择上午下午
   		this.curTime = ''
   		console.log(day)
+  	},
+  	comfirm(){
+  		if (this.curTime) {
+  			this.$router.push({
+  				path:'/register_form',
+  				query:{
+  					date: this.fullDate[this.curChoose],
+  					week: this.week[this.curChoose],
+  					time: this.curTime
+  				}
+  			})
+  		}else{
+  			return false
+  		}
+  		
   	}
   }
 }
