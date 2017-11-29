@@ -27,13 +27,16 @@ export default {
 	width: 100%;
 	height: px(80);
 	position: relative;
-	font-size: px(30);
+	font-size: px(36);
 	display: flex;
 	align-items:center;
 	justify-content:center;
 	color: #fff;
 	box-shadow:  0 px(2)  px(5) rgba(0,0,0,.3);
 	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 999;
 }
 .back_icon{
 	width:px(50);

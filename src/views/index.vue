@@ -78,29 +78,4 @@ export default {
 		}
 	}
 }
-@-webkit-keyframes slideInRight {
-  from {
-    -webkit-transform: translate3d(300%, 0, 0);
-    transform: translate3d(300%, 0, 0);
-    visibility: visible;
-  }
-
-  to {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    -webkit-transform: translate3d(300%, 0, 0);
-    transform: translate3d(300%, 0, 0);
-    visibility: visible;
-  }
-
-  to {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
 </style>

@@ -7,7 +7,7 @@ import register_form from '@/views/register_form/register_form'
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  //mode: 'history',
   routes: [
     {
       path: '/',

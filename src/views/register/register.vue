@@ -11,7 +11,7 @@
 			<label for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
-					<p>早班111</p>
+					<p>早班</p>
 					<p>营业时间：8:30～11:30</p>
 					<p>剩余号数：18</p>
 					<input :disabled="morningIsDisabled" id="morning" type="radio" value="morning" v-model="curTime" >
@@ -153,7 +153,7 @@ export default {
 			position: relative;
 		}
 		.active{
-			background-color: #6cb7f1;
+			background-color: $blue;
 			color:#fff;
 		}
 	}
@@ -178,7 +178,7 @@ export default {
 			top:50%;
 			left:50%;
 			transform:translate3d(-50%,-50%,0) scale(0);
-			background-color: #6cb7f1;
+			background-color: $blue;
 			transition:all ease .3s;
 			opacity: 0;
 		}

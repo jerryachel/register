@@ -114,9 +114,9 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ]),
-    new PrerenderSpaPlugin(
-      path.join(__dirname, '../dist'), ['/']
-    )
+/*    new PrerenderSpaPlugin(
+      path.join(__dirname, '../dist'), ['/','/register','/register_form']
+    )*/
   ]
 })
 
