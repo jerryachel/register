@@ -3,7 +3,7 @@
 		<nav-top title="填写预约信息"></nav-top>
 		<div class="register_form">
 			<p class="register_time">所选时间：{{$route.query.date}}（周{{$route.query.week}}）&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}</p>
-			<transition-group name="fade">
+			<transition-group name="appointment">
 				<div class="appointment" v-for="(item , index) in appointment" :key="index">
 					<p class="appointment_title">请填写预约人信息或者
 						<mt-button @click="uesCommonAppointment(index)" type="primary" size="small">使用常用预约人</mt-button>
@@ -30,18 +30,22 @@
 			<div @click="add_appointment" class="register_btn add_appointment">添加预约人</div>
 			<div @click="comfirm" class="register_btn comfirm_appointment">确&nbsp;&nbsp;定</div>
 		</div>
-		<mt-popup v-model="popupVisible" position="left"></mt-popup>
+		<transition name="popup">
+			<div v-show="popupVisible" class="popup_container">
+				<nav-top title="常用预约人"></nav-top>
+				123456
+			</div>
+		</transition>
 	</div>
 </template>
 <script>
 import navTop from '../../components/nav.vue'
-import { Button,Field,MessageBox,Popup} from 'mint-ui'
+import { Button,Field,MessageBox} from 'mint-ui'
 export default {
   components: {
 	navTop:navTop,
 	mtButton:Button,
-	mtField:Field,
-	mtPopup:Popup
+	mtField:Field
   },
   data(){
   	return {
@@ -203,7 +207,17 @@ export default {
 		background-color: #67c23a
 	}
 }
-.fade-enter-active{
+.appointment-enter-active{
 	animation: slideInRight .6s  both 1;
+}
+.popup-enter-active{
+	animation: slideInRight .6s  both 1;
+}
+.popup_container{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
 }
 </style>
