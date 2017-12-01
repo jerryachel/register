@@ -30,10 +30,17 @@
 			<div @click="add_appointment" class="register_btn add_appointment">添加预约人</div>
 			<div @click="comfirm" class="register_btn comfirm_appointment">确&nbsp;&nbsp;定</div>
 		</div>
+		<div v-show="popupVisible" @click="popupVisible = false" class="mask"></div>
 		<transition name="popup">
 			<div v-show="popupVisible" class="popup_container">
-				<nav-top title="常用预约人"></nav-top>
-				123456
+				<p class="popup_title"><span @click="popupVisible = false">取消</span>使用预约人</p>
+				<div class="popup_content">
+					<ul>
+						<li class="popup_list">
+
+						</li>
+					</ul>
+				</div>
 			</div>
 		</transition>
 	</div>
@@ -79,6 +86,7 @@ export default {
   			sex:'man'
   		}
   		this.appointment.push(appointment)
+  		//chat.scrollTop = chat.scrollHeight;
   	},
   	//使用常用预约人
   	uesCommonAppointment(i){
@@ -213,11 +221,55 @@ export default {
 .popup-enter-active{
 	animation: slideInRight .6s  both 1;
 }
-.popup_container{
+.popup-leave-active{
+	animation: slideOutRight .4s  both 1;
+}
+.mask{
 	width: 100%;
 	height: 100%;
 	position: fixed;
 	top: 0;
 	left: 0;
+	z-index: 998;
+	background-color: rgba(0,0,0,.4)
+}
+.popup_container{
+	width: 85%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	right: 0;
+	z-index	:999;
+	background-color: #fff;
+	box-shadow: px(-2) 0 px(5) rgba(0,0,0,.3);
+	.popup_title{
+		width: 100%;
+		height: px(80);
+		background-color: $blue;
+		color: #fff;
+		text-align: center;
+		position: relative;
+		font-size: px(36);
+		line-height: px(78);
+		span{
+			font-size: px(32);
+			position: absolute;
+			top: 50%;
+			transform:translate(0,-50%);
+			left: px(20);
+			padding: px(10);
+		}
+	}
+	.popup_content{
+		width: 100%;
+		min-height: 100%;
+		padding: 0 px(20);
+		margin-top: px(50);
+	}
+	.popup_list{
+		width: 100%;
+		height: px(200);
+		border: px(2) solid $blue;
+	}
 }
 </style>
