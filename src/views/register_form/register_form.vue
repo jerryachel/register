@@ -6,7 +6,7 @@
 			<transition-group name="appointment">
 				<div class="appointment" v-for="(item , index) in appointment" :key="index">
 					<p class="appointment_title">请填写预约人信息或者
-						<mt-button @click="uesCommonAppointment(index)" type="primary" size="small">使用常用预约人</mt-button>
+						<mt-button @click="showCommonAppointment(index)" type="primary" size="small">使用常用预约人</mt-button>
 					</p>
 					<mt-field label="您的名字" placeholder="请输入您的名字" v-model="item.name"></mt-field>
 					<mt-field label="您的电话" placeholder="请输入您的电话" v-model="item.phone"></mt-field>
@@ -36,8 +36,15 @@
 				<p class="popup_title"><span @click="popupVisible = false">取消</span>使用预约人</p>
 				<div class="popup_content">
 					<ul>
-						<li class="popup_list">
-
+						<li v-for="(item, index) in info" class="popup_list">
+							<div class="list_info">
+								<p>
+									<span>小陈（男)</span>
+									<span>13555555555</span>
+								</p>
+								<p class="address">澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX</p>
+							</div>
+							<div @click="uesCommonAppointment(index)" class="list_btn">使&nbsp;&nbsp;用</div>
 						</li>
 					</ul>
 				</div>
@@ -62,7 +69,44 @@ export default {
   			address:'',
   			sex:'man'
   		}],
-  		popupVisible:false
+  		popupVisible:false,
+  		currentAppointment:0,
+  		info:[{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		},{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		},{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		},{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		},{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		},{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		},{
+  			name:'小陈（男)',
+  			phone:'13555555555',
+  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
+  			sex:'woman'
+  		}]
   	}
   },
   created(){
@@ -88,9 +132,14 @@ export default {
   		this.appointment.push(appointment)
   		//chat.scrollTop = chat.scrollHeight;
   	},
-  	//使用常用预约人
-  	uesCommonAppointment(i){
+  	//显示常用预约人弹层
+  	showCommonAppointment(i){
   		this.popupVisible = true
+  		this.currentAppointment = i
+  	},
+  	uesCommonAppointment(i){
+  		this.$set(this.appointment, this.currentAppointment, this.info[i])
+  		this.popupVisible = false
   	},
   	//确认提交
   	comfirm(){
@@ -118,6 +167,7 @@ export default {
 	height: 100%;		
 	position: relative;
 	overflow: hidden;
+	color: #333;
 }
 .register_form{
 	width: 100%;
@@ -262,14 +312,46 @@ export default {
 	}
 	.popup_content{
 		width: 100%;
-		min-height: 100%;
-		padding: 0 px(20);
-		margin-top: px(50);
+		height: 100%;
+		-webkit-overflow-scrolling: touch;
+		overflow: auto;
+		padding:0 px(20) px(80);
 	}
 	.popup_list{
 		width: 100%;
-		height: px(200);
+		height: px(220);
 		border: px(2) solid $blue;
+		display: flex;
+		font-size: px(30);
+		margin: px(32) 0;
+		.list_info{
+			width: 80%;
+			height: 100%;
+			display: flex;
+			flex-direction:column;
+			justify-content:space-around;
+			padding: px(20) px(40);
+			>p{
+				display: flex;
+				justify-content:space-between;
+			}
+			.address{
+				overflow : hidden;
+			    text-overflow: ellipsis;
+			    display: -webkit-box;
+			    -webkit-line-clamp: 3;
+			    -webkit-box-orient: vertical;
+			}
+		}
+		.list_btn{
+			width: 20%;
+			height: 100%;
+			background-color: #67c23a;
+			text-align: center;
+			color: #fff;
+			line-height: px(214);
+			
+		}
 	}
 }
 </style>
