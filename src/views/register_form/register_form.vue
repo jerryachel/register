@@ -1,7 +1,7 @@
 <template>
 	<div class="register_container">
 		<nav-top title="填写预约信息"></nav-top>
-		<div class="register_form">
+		<div ref="register_form" class="register_form">
 			<p class="register_time">所选时间：{{$route.query.date}}（周{{$route.query.week}}）&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}</p>
 			<transition-group name="appointment">
 				<div class="appointment" v-for="(item , index) in appointment" :key="index">
@@ -28,7 +28,7 @@
 		</div>
 		<div class="register_btn_group">
 			<div @click="add_appointment" class="register_btn add_appointment">添加预约人</div>
-			<div @click="comfirm" class="register_btn comfirm_appointment">确&nbsp;&nbsp;定</div>
+			<div @click="comfirmValidate" class="register_btn comfirm_appointment">确&nbsp;&nbsp;定</div>
 		</div>
 		<div v-show="popupVisible" @click="popupVisible = false" class="mask"></div>
 		<transition name="popup">
@@ -109,8 +109,8 @@ export default {
   		}]
   	}
   },
-  created(){
-
+  mounted(){
+  	
   },
   methods:{
   	//删除预约人
@@ -118,6 +118,8 @@ export default {
   		console.log(i)
 		MessageBox.confirm('确定删除该预约人信息吗?').then(action => {
 			this.appointment.splice(i,1)
+		},()=>{
+			console.log('cancel')
 		});
   		
   	},
@@ -131,32 +133,54 @@ export default {
   		}
   		this.appointment.push(appointment)
   		//chat.scrollTop = chat.scrollHeight;
+  		console.log(this.$refs.register_form.scrollHeight)
+		this.$nextTick(function () {
+			this.$refs.register_form.scrollTop = this.$refs.register_form.scrollHeight
+		})
+  		
+
   	},
   	//显示常用预约人弹层
   	showCommonAppointment(i){
   		this.popupVisible = true
   		this.currentAppointment = i
   	},
+  	//选择常用预约人
   	uesCommonAppointment(i){
   		this.$set(this.appointment, this.currentAppointment, this.info[i])
   		this.popupVisible = false
   	},
-  	//确认提交
-  	comfirm(){
+  	//提交前验证
+  	comfirmValidate(){
   		let len = this.appointment.length
   		if (len == 0) {
   			MessageBox.alert('请添加预约人')
   			return false
   		}else{
-  			this.appointment.forEach(function(obj){
-  				for(var key in obj){
-  					if (obj[key] == '') {
+  			for(let i = 0 ; i < this.appointment.length; i++){
+  				for(var key in this.appointment[i]){
+  					if (this.appointment[i][key] == '') {
   						MessageBox.alert('请完整填写预约人信息后再提交')
+  						return false
   					}
 				}
-  			})
+  			}
+  			//判断名额是否充足
+  			this.notEnoughPopup()
   		}
+  	},
+  	enoughPopup(){
+
+  	},
+  	notEnoughPopup(){
+  		MessageBox({
+		  title: '提示',
+		  message: '当前剩余名额不足(余2人)<br>无法进行预约',
+		  //showCancelButton: true
+		});
   	}
+
+
   }
 }
 </script>
