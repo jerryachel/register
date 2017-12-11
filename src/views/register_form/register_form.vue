@@ -86,26 +86,6 @@ export default {
   			phone:'13555555555',
   			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
   			sex:'woman'
-  		},{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
-  		},{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
-  		},{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
-  		},{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
   		}]
   	}
   },
@@ -132,13 +112,9 @@ export default {
   			sex:'man'
   		}
   		this.appointment.push(appointment)
-  		//chat.scrollTop = chat.scrollHeight;
-  		console.log(this.$refs.register_form.scrollHeight)
 		this.$nextTick(function () {
 			this.$refs.register_form.scrollTop = this.$refs.register_form.scrollHeight
 		})
-  		
-
   	},
   	//显示常用预约人弹层
   	showCommonAppointment(i){
@@ -166,11 +142,21 @@ export default {
 				}
   			}
   			//判断名额是否充足
-  			this.notEnoughPopup()
+  			this.enoughPopup()
   		}
   	},
   	enoughPopup(){
-
+  		let time  =  this.$route.query.time=='morning'?'早班':'晚班'
+  		MessageBox({
+		  title: `您在${this.$route.query.date}（周${this.$route.query.week}）${time}`,
+		  message: `为 ${this.appointment.length} 人进行了预约操作<br>点击确定进行挂号费支付<br>（成功支付后挂号费用不予退还）`,
+		  showCancelButton: true
+		}).then(()=>{
+			//调起微信支付
+			this.$router.push('/register_result')
+		}, ()=>{
+			console.log('cancel')
+		});
   	},
   	notEnoughPopup(){
   		MessageBox({
