@@ -2,7 +2,11 @@
 	<div class="register_container">
 		<nav-top title="填写预约信息"></nav-top>
 		<div ref="register_form" class="register_form">
-			<p class="register_time">所选时间：{{$route.query.date}}（周{{$route.query.week}}）&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}</p>
+			<p class="register_info">
+				所选时间：{{$route.query.date}}（周{{$route.query.week}}）&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}<br>
+				为 {{this.appointment.length}} 人进行了预约操作<br>
+				预约费用为：3 元（成功支付后挂号费用不予退还）
+			</p>
 			<transition-group name="appointment">
 				<div class="appointment" v-for="(item , index) in appointment" :key="index">
 					<p class="appointment_title">请填写预约人信息或者
@@ -146,17 +150,8 @@ export default {
   		}
   	},
   	enoughPopup(){
-  		let time  =  this.$route.query.time=='morning'?'早班':'晚班'
-  		MessageBox({
-		  title: `您在${this.$route.query.date}（周${this.$route.query.week}）${time}`,
-		  message: `为 ${this.appointment.length} 人进行了预约操作<br>点击确定进行挂号费支付<br>（成功支付后挂号费用不予退还）`,
-		  showCancelButton: true
-		}).then(()=>{
-			//调起微信支付
-			this.$router.push('/register_result')
-		}, ()=>{
-			console.log('cancel')
-		});
+		//调起微信支付
+		this.$router.push('/register_result')
   	},
   	notEnoughPopup(){
   		MessageBox({
@@ -187,8 +182,9 @@ export default {
 	-webkit-overflow-scrolling: touch;
 	position: relative;
 	overflow: auto;
-	.register_time{
+	.register_info{
 		font-size:px(30);
+		line-height: 2;
 		margin: px(30) 0;
 	}
 	.appointment{

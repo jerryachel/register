@@ -8,7 +8,7 @@
 			<ul class="register_days">
 				<li v-for="(item, index) in date">{{item}}</li>
 			</ul>
-			<label for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
+			<label @click="showTips('morning')" for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
 					<p>早班</p>
@@ -18,7 +18,7 @@
 				</div>
 				<img src="../../assets/images/choose.png" alt="">
 			</label>
-			<label for="afternoon" :class="[curTime == 'afternoon'?'chosen':'',afternoonIsDisabled? 'disabled':'']">
+			<label @click="showTips('afternoon')" for="afternoon" :class="[curTime == 'afternoon'?'chosen':'',afternoonIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
 					<p>晚班</p>
@@ -34,6 +34,7 @@
 </template>
 <script>
 import navTop from '../../components/nav.vue'
+import {MessageBox} from 'mint-ui'
 export default {
   components: {
 	navTop
@@ -121,6 +122,11 @@ export default {
   			return false
   		}
   		
+  	},
+  	showTips(when){
+  		if ((when == 'morning' && this.morningIsDisabled) || ( when == 'afternoon' && this.afternoonIsDisabled)) {
+  			alert('...')
+  		}
   	}
   }
 }
