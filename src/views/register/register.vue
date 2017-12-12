@@ -46,7 +46,10 @@ export default {
       	date:[],
       	curChoose:0, //选择的日期
       	curTime:'',  //选择早班晚班
-      	timer:new Date()
+      	timer:new Date(),
+      	morningIsDisabled:false,
+      	afternoonIsDisabled:false,
+      	timeout:''
     }
   },
   created(){
@@ -59,54 +62,43 @@ export default {
   		this.date.push(date.getDate())
   		this.week.push(aWeek[date.getDay()])
   	}
-  	let timer = new Date()
-  	var count = function(){
-		setTimeout(function(){
-	  		timer = new Date(timer.getTime()+1000)
-	  		this.timer = timer
-	  		console.log(this.timer)
-	  		count()
-	  	},1000)
-  	} 
-  	//count()
-  		
-  },
-  watch:{
-  	curTime(){
-  		console.log(this.curTime)
-  	}
-  },
-  computed:{
-  	morningIsDisabled:function(){
-  		console.log('morning')
-  		let now = this.timer
-  		let hours = now.getHours()
-  		let minute = now.getMinutes()
-  		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
-  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22)){  	
-			return false
-  		}else{
-  			return true
-  		}
-  	},
-  	afternoonIsDisabled:function(){
-  		let now = this.timer
-  		let hours = now.getHours()
-  		let minute = now.getMinutes()
-  		//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
-  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<=30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22) ) {
-  			return false
-  		}else{
-  			return true
-  		}
-  	}
+  	this.count()
   },
   methods:{
+  	count(serverTime = new Date()){
+  		this.checkTime()
+  		this.timeout = setTimeout(()=>{
+			this.timer = new Date(serverTime.getTime()+1000)
+			console.log(this.timer)
+	  		this.count(this.timer)
+  		},1000)
+  	},
+  	checkTime(){
+  		let now = this.timer
+  		let hours = now.getHours()
+  		let minute = now.getMinutes()
+  		//上午
+  		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
+  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22)){  	
+			this.morningIsDisabled = false
+  		}else{
+  			this.morningIsDisabled = true
+  		}
+  		//下午
+    	//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
+  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22) ) {
+  			this.afternoonIsDisabled = false
+  		}else{
+  			this.afternoonIsDisabled =  true
+  		}
+
+  	},
   	chooseDay(i,day){
   		this.curChoose = i
   		//重置选择上午下午
   		this.curTime = ''
   		console.log(day)
+  		this.checkTime()
   	},
   	comfirm(){
   		if (this.curTime) {
@@ -117,6 +109,7 @@ export default {
   					week: this.week[this.curChoose],
   					time: this.curTime
   				}
+
   			})
   		}else{
   			return false
@@ -125,10 +118,15 @@ export default {
   	},
   	showTips(when){
   		if ((when == 'morning' && this.morningIsDisabled) || ( when == 'afternoon' && this.afternoonIsDisabled)) {
-  			alert('...')
+  			MessageBox.alert('该时间段已无法预约')
   		}
   	}
-  }
+  },
+    beforeRouteLeave(to, from, next){
+  	console.log(to, from)
+  	clearTimeout(this.timeout)
+  	next()
+  },
 }
 	
 </script>

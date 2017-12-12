@@ -8,7 +8,7 @@
 		<p class="info">您的预约时间为：2017年9月22日(周四)<br>下午您的号码为：15，16，17</p>
 		<div class="btn_group">
 			<router-link to="/" class="btn_l">返回首页</router-link >
-			<router-link to="/"class="btn_r">查看详情</router-link >
+			<router-link to="/register_search"class="btn_r">查看详情</router-link >
 		</div>
 	</div>
 </template>
@@ -73,6 +73,15 @@ export default {
 			flex:1;
 			text-align: center;
 			line-height: px(78);
+			font-size: px(30);
+			color: #fff;
+		}
+		.btn_l{
+			background-color: #6cb7f1;
+			border-right: px(1) solid #fff;
+		}
+		.btn_r{
+			background-color: #67c23a;
 		}
 	}
 }

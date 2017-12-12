@@ -265,7 +265,7 @@ export default {
 	}
 	.add_appointment{
 		background-color: $blue;
-		border-right: px(2) solid #fff;
+		border-right: px(1) solid #fff;
 	}
 	.comfirm_appointment{
 		background-color: #67c23a

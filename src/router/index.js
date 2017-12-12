@@ -4,6 +4,8 @@ import index from '@/views/index'
 import register from '@/views/register/register'
 import register_form from '@/views/register_form/register_form'
 import register_result from '@/views/register_result/register_result'
+import register_search from '@/views/register_search/register_search'
+import manage from '@/views/appointment_manage/manage'
 Vue.use(Router)
 
 export default new Router({
@@ -25,6 +27,14 @@ export default new Router({
       path: '/register_result',
       name: 'register_result',
       component: register_result
+    },{
+      path: '/register_search',
+      name: 'register_search',
+      component: register_search
+    },{
+      path: '/manage',
+      name: 'manage',
+      component: manage
     }
   ]
 })

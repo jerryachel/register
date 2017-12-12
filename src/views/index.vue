@@ -6,11 +6,11 @@
 			<img src="../assets/images/icon1.png" alt="">
 			<p class="link_title">预约挂号</p>
 		</router-link>
-		<router-link to="" class="link_btn link_btn2">
+		<router-link to="/register_search" class="link_btn link_btn2">
 			<img src="../assets/images/icon2.png" alt="">
 			<p class="link_title">挂号查询</p>
 		</router-link>
-		<router-link to="" class="link_btn link_btn3">
+		<router-link to="/manage" class="link_btn link_btn3">
 			<img src="../assets/images/icon3.png" alt="">
 			<p class="link_title">常用预约人管理</p>
 		</router-link>

@@ -20,8 +20,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import './assets/css/public.css'
-
 import './assets/js/flexible.min.js'
+import {InfiniteScroll} from 'mint-ui'
+Vue.use(InfiniteScroll);
 
 Vue.config.productionTip = false
 
