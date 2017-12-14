@@ -6,6 +6,7 @@ import register_form from '@/views/register_form/register_form'
 import register_result from '@/views/register_result/register_result'
 import register_search from '@/views/register_search/register_search'
 import manage from '@/views/appointment_manage/manage'
+import add from '@/views/appointment_manage/add'
 Vue.use(Router)
 
 export default new Router({
@@ -35,6 +36,10 @@ export default new Router({
       path: '/manage',
       name: 'manage',
       component: manage
-    }
+    },{
+        path: '/add',
+        name: 'add',
+        component: add,
+      }
   ]
 })

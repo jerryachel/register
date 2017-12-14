@@ -32,7 +32,7 @@ export default {
 	align-items:center;
 	justify-content:center;
 	color: #fff;
-	box-shadow:  0 px(2)  px(5) rgba(0,0,0,.3);
+	box-shadow:  0 px(2)  px(5) rgba(107,183,242,.3);
 	position: fixed;
 	top: 0;
 	left: 0;

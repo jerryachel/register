@@ -1,8 +1,9 @@
 <template>
 	<div class="search_container">
 		<nav-top title="挂号查询"></nav-top>
+		<p v-if="register_list.length == 0 " class="no_content">-- 暂无常用联系人 --</p>
 		<ul v-infinite-scroll="loadMore"  class="register_list_wrap">
-			<li v-for="(item,index) in register_list" class="register_list">
+			<li :key="index" v-for="(item,index) in register_list" class="register_list">
 				<p class="list_title">
 					<span>{{item.time}}</span>
 					<span>号码：{{item.num}}</span>	
@@ -76,18 +77,19 @@ export default {
 <style lang="scss">
 @import '../../assets/css/index.scss';
 .search_container{
-	color: #333;
+	color: #6bb7f2;
 	padding-top: px(80);
 	.register_list_wrap{
 	
 	}
 	.register_list{
 		width: 90%;
-		margin: px(30) auto;
-		border: px(2) solid #ccc;
+		margin: px(50) auto;
+		//border: px(2) solid #ccc;
 		border-radius:px(8);
 		padding: px(15) px(25);
 		font-size: px(30);
+		box-shadow: px(0) px(10) px(60) px(0) rgba(107,183,242,.3);
 		p{
 			margin: px(20) auto;
 			padding: 0 px(50) ;
@@ -95,7 +97,7 @@ export default {
 		.list_title{
 			@extend %flex_justify;
 			line-height: 2;
-			border-bottom: px(1) solid #ccc;
+			border-bottom: px(1) solid #6bb7f2;
 			padding:0 0 px(10) 0;
 			margin-top: 0;
 		}
