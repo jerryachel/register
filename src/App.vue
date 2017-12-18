@@ -19,4 +19,7 @@ html,body,#app{
 .border{
     box-shadow: 0 1px 0 hsla(0,0%,86%,.3);
 }
+.mint-indicator-wrapper{
+	z-index: 999
+}
 </style>

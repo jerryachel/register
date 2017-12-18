@@ -1,29 +1,29 @@
 <template>
 	<div class="register_container">
 		<nav-top title="选择预约时间"></nav-top>
-		<div class="register">
+		<div v-cloak class="register">
 			<ul class="register_days">
 				<li @click="chooseDay(index,item)" :class="index == curChoose?'active':''" v-for="(item, index) in week">{{item}}</li>
 			</ul>
 			<ul class="register_days">
 				<li v-for="(item, index) in date">{{item}}</li>
 			</ul>
-			<label @click="showTips('morning')" for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
+			<label v-cloak @click="showTips('morning')" for="morning" :class="[curTime == 'morning'?'chosen':'',morningIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
 					<p>早班</p>
 					<p>营业时间：8:30～11:30</p>
-					<p>剩余号数：18</p>
+					<p>剩余号数：{{morningLeft}}</p>
 					<input :disabled="morningIsDisabled" id="morning" type="radio" value="morning" v-model="curTime" >
 				</div>
 				<img src="../../assets/images/choose.png" alt="">
 			</label>
-			<label @click="showTips('afternoon')" for="afternoon" :class="[curTime == 'afternoon'?'chosen':'',afternoonIsDisabled? 'disabled':'']">
+			<label v-cloak @click="showTips('afternoon')" for="afternoon" :class="[curTime == 'afternoon'?'chosen':'',afternoonIsDisabled? 'disabled':'']">
 				<div class="chosen_bg"></div>
 				<div class="register_info">
 					<p>晚班</p>
 					<p>营业时间：18:40～21:30</p>
-					<p>剩余号数：10</p>
+					<p>剩余号数：{{nightLeft}}</p>
 					<input :disabled="afternoonIsDisabled" id="afternoon" type="radio" value="afternoon" v-model="curTime" >
 				</div>
 				<img src="../../assets/images/choose.png" alt="">
@@ -35,6 +35,7 @@
 <script>
 import navTop from '../../components/nav.vue'
 import {MessageBox} from 'mint-ui'
+import axios from '../../service/axios.js'
 export default {
   components: {
 	navTop
@@ -49,57 +50,93 @@ export default {
       	timer:new Date(),
       	morningIsDisabled:false,
       	afternoonIsDisabled:false,
-      	timeout:''
+      	timeout:'',
+      	morningLeft:'',
+      	nightLeft:''
     }
   },
   created(){
-  	let aWeek = new Array("日", "一", "二", "三", "四", "五", "六")
-  	//获取未来七天
-  	for(let i = 0 ;i<7;i++){
-  		let date = new Date()
-  		date.setDate(new Date().getDate()+i)
-  		this.fullDate.push(date.Format('yyyy-MM-dd'))
-  		this.date.push(date.getDate())
-  		this.week.push(aWeek[date.getDay()])
+  	this.getDaySource()
+  },
+  watch:{
+  	//改变预约时间时获取数据
+  	curChoose:function(i){
+  		console.log(i)
+  		this.getDaySource(this.fullDate[i])
   	}
-  	this.count()
   },
   methods:{
+  	//改变预约时间
+  	chooseDay(i,day){
+  		this.curChoose = i
+  		//重置选择上午下午
+  		this.curTime = ''
+  		//console.log(day)
+  		this.checkTime()
+  	},
+  	//获取号源
+  	getDaySource(day){
+		axios.get('clinic/daySource.do',{
+			params:{
+				date:day || ''
+			}
+		}).then(({data})=>{
+			console.log(data)
+			let res = data.data
+			this.morningLeft = res.morningLeft
+			this.nightLeft = res.nightLeft
+			//首次请求时，获取当天时间的时分秒并执行计时器
+			if (day == undefined) {
+			  	//res.currentDay ='2012-12-25 20:17:24';
+			    res.currentDay = res.currentDay.replace(new RegExp("-","gm"),"/")
+			    this.timer = new Date(res.currentDay)
+			    let date = new Date(res.currentDay)
+			    let aWeek = new Array("日", "一", "二", "三", "四", "五", "六")
+			  	//获取未来七天
+			  	for(let i = 0 ;i<7;i++){
+			  		console.log(date.getDate(),i)
+			  		this.fullDate.push(date.Format('yyyy-MM-dd'))
+			  		this.date.push(date.getDate()) 
+			  		this.week.push(aWeek[date.getDay()])
+
+			  		date.setDate(date.getDate()+1)
+			  	}
+			  	this.count(this.timer)
+			}
+		})
+  	},
+  	//计时器
   	count(serverTime = new Date()){
   		this.checkTime()
   		this.timeout = setTimeout(()=>{
 			this.timer = new Date(serverTime.getTime()+1000)
-			console.log(this.timer)
+			//console.log(this.timer)
 	  		this.count(this.timer)
   		},1000)
   	},
+  	//判断上下午是否可选
   	checkTime(){
   		let now = this.timer
   		let hours = now.getHours()
   		let minute = now.getMinutes()
+  		//console.log(now)
   		//上午
   		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
-  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22)){  	
+  		if (this.morningLeft != 0 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22)){  	
 			this.morningIsDisabled = false
   		}else{
   			this.morningIsDisabled = true
   		}
   		//下午
     	//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
-  		if (1 == 1 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22) ) {
+  		if (this.nightLeft != 0 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22) ) {
   			this.afternoonIsDisabled = false
   		}else{
   			this.afternoonIsDisabled =  true
   		}
 
   	},
-  	chooseDay(i,day){
-  		this.curChoose = i
-  		//重置选择上午下午
-  		this.curTime = ''
-  		console.log(day)
-  		this.checkTime()
-  	},
+  	//确认提交
   	comfirm(){
   		if (this.curTime) {
   			this.$router.push({

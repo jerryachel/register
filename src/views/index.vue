@@ -19,11 +19,15 @@
 </template>
 
 <script>
+import axios from '../service/axios.js'
 export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  created(){
+
   }
 }
 </script>
