@@ -19,8 +19,7 @@ service.interceptors.request.use(config => {
         spinnerType: 'double-bounce'
       })
     }
-    console.log('1st')
-  },300)
+  },500)
   // Do something before request is sent
 
   return config;
@@ -36,7 +35,6 @@ service.interceptors.response.use(
     clearTimeout(timer)
     flag = false
     Indicator.close()
-    console.log('2nd')
     return response
   },
   /**

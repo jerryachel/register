@@ -82,7 +82,7 @@ export default {
 			}
 		}).then(({data})=>{
 			console.log(data)
-			let res = data.data
+			let res = data.model
 			this.morningLeft = res.morningLeft
 			this.nightLeft = res.nightLeft
 			//首次请求时，获取当天时间的时分秒并执行计时器
@@ -98,7 +98,7 @@ export default {
 			  		this.fullDate.push(date.Format('yyyy-MM-dd'))
 			  		this.date.push(date.getDate()) 
 			  		this.week.push(aWeek[date.getDay()])
-
+			  		
 			  		date.setDate(date.getDate()+1)
 			  	}
 			  	this.count(this.timer)
@@ -122,16 +122,18 @@ export default {
   		//console.log(now)
   		//上午
   		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
-  		if (this.morningLeft != 0 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22)){  	
+  		if (this.morningLeft != 0 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22 && this.morningLeft != 0)){  	
 			this.morningIsDisabled = false
   		}else{
   			this.morningIsDisabled = true
   		}
   		//下午
     	//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
-  		if (this.nightLeft != 0 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22) ) {
+  		if (this.nightLeft != 0 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22 && this.nightLeft != 0) ) {
+  			console.log('yes')
   			this.afternoonIsDisabled = false
   		}else{
+  			console.log('no')
   			this.afternoonIsDisabled =  true
   		}
 

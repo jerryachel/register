@@ -2,27 +2,27 @@
 	<div class="register_container">
 		<nav-top title="填写预约信息"></nav-top>
 		<div ref="register_form" class="register_form">
-			<p class="register_info">
+			<p v-cloak class="register_info">
 				所选时间：{{$route.query.date}}（周{{$route.query.week}}）&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}<br>
 				为 {{this.appointment.length}} 人进行了预约操作<br>
-				预约费用为：3 元（成功支付后挂号费用不予退还）
+				预约费用为：{{price}} 元（成功支付后挂号费用不予退还）
 			</p>
 			<transition-group name="appointment">
 				<div class="appointment" v-for="(item , index) in appointment" :key="index">
 					<p class="appointment_title">请填写预约人信息或者
 						<mt-button @click="showCommonAppointment(index)" type="primary" size="small">使用常用预约人</mt-button>
 					</p>
-					<mt-field label="您的名字" placeholder="请输入您的名字" v-model="item.name"></mt-field>
-					<mt-field label="您的电话" placeholder="请输入您的电话" v-model="item.phone"></mt-field>
-					<mt-field label="您的地址" placeholder="请输入您的地址" v-model="item.address"></mt-field>
+					<mt-field label="您的名字" placeholder="请输入您的名字" v-model="item.contactName"></mt-field>
+					<mt-field label="您的电话" placeholder="请输入您的电话" v-model="item.contactMobile"></mt-field>
+					<mt-field label="您的地址" placeholder="请输入您的地址" v-model="item.contactAddress"></mt-field>
 					<div class="appointment_sex">
 						<span class="">您的性别</span>
 						<div class="sex">
-							<label :for="'man'+index" :class="item.sex=='man'? 'sex_active':''">男
-								<input :id="'man'+index" type="radio" value="man" v-model="item.sex">
+							<label :for="'man'+index" :class="item.sex==0? 'sex_active':''">男
+								<input :id="'man'+index" type="radio" value=0 v-model="item.sex">
 							</label>
-							<label :for="'woman'+index" :class="item.sex=='woman'? 'sex_active':''">女
-								<input :id="'woman'+index" type="radio" value="woman" v-model="item.sex">
+							<label :for="'woman'+index" :class="item.sex==1? 'sex_active':''">女
+								<input :id="'woman'+index" type="radio" value=1 v-model="item.sex">
 							</label>
 						</div>
 					</div>
@@ -40,15 +40,15 @@
 				<p class="popup_title"><span @click="popupVisible = false">取消</span>使用预约人</p>
 				<div class="popup_content">
 					<ul>
-						<li v-for="(item, index) in info" class="popup_list">
+						<li  v-for="(item, index) in info"  class="popup_list">
 							<div class="list_info">
 								<p>
-									<span>小陈（男)</span>
-									<span>13555555555</span>
+									<span>{{item.contactName}}（{{item.sex?'女':'男'}})</span>
+									<span>{{item.contactMobile}}</span>
 								</p>
-								<p class="address">澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX</p>
+								<p class="address">{{item.contactAddress}}</p>
 							</div>
-							<div @click="uesCommonAppointment(index)" class="list_btn">使&nbsp;&nbsp;用</div>
+							<div @click="uesCommonAppointment(index,item.contactId)" class="list_btn">使&nbsp;&nbsp;用</div>
 						</li>
 					</ul>
 				</div>
@@ -57,7 +57,9 @@
 	</div>
 </template>
 <script>
+import axios from '../../service/axios.js'
 import navTop from '../../components/nav.vue'
+import wx from 'weixin-js-sdk'
 import { Button,Field,MessageBox} from 'mint-ui'
 export default {
   components: {
@@ -68,33 +70,30 @@ export default {
   data(){
   	return {
   		appointment : [{
-  			name:'',
-  			phone:'',
-  			address:'',
-  			sex:'man'
+  			contactId:'',
+  			contactName:'',
+  			contactMobile:'',
+  			contactAddress:'',
+  			sex:0
   		}],
   		popupVisible:false,
   		currentAppointment:0,
-  		info:[{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
-  		},{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
-  		},{
-  			name:'小陈（男)',
-  			phone:'13555555555',
-  			address:'澄海区XXXXXXXXXXXXXXXX澄海区XXXXXXXXXXXXXXXX',
-  			sex:'woman'
-  		}]
+  		price:'',
+  		info:[]
   	}
   },
-  mounted(){
-  	
+  created(){
+  	//获取挂号费
+	axios.get('clinic/numberPrice.do').then(({data})=>{
+		let res = data.model
+		this.price = res
+	})
+	//获取常用联系人
+	axios.get('clinic/queryAllContact.do').then(({data})=>{
+		let res = data.model
+		console.log(res)
+		this.info = res
+	})
   },
   methods:{
   	//删除预约人
@@ -126,8 +125,9 @@ export default {
   		this.currentAppointment = i
   	},
   	//选择常用预约人
-  	uesCommonAppointment(i){
-  		this.$set(this.appointment, this.currentAppointment, this.info[i])
+  	uesCommonAppointment(i,id){
+  		console.log(i,id)
+  		this.$set(this.appointment, this.currentAppointment, JSON.parse(JSON.stringify(this.info[i])))
   		this.popupVisible = false
   	},
   	//提交前验证
@@ -144,19 +144,68 @@ export default {
   						return false
   					}
 				}
+				let reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证手机规则
+				if (!reg.test(this.appointment[i].contactMobile)) {
+					MessageBox.alert('请输入正确的手机号码')
+					return false
+				}
   			}
   			//判断名额是否充足
   			this.enoughPopup()
   		}
   	},
   	enoughPopup(){
+  		axios.get('clinic/numberLeft.do',{
+  			params:{
+				dateTime:this.$route.query.date,
+				configClass:this.$route.query.time == 'morning' ? 0 : 1
+			}
+  		}).then(({data})=>{
+  			let res = data.model
+  			if (res < this.appointment.length) {
+  				this.notEnoughPopup(res)
+  			}else{
+  				axios.get('/pay/preparePay.do',{
+  					params:{
+  						total_fee:4.5
+  					}
+  				}).then(({data})=>{
+  					console.log(data)
+  				})
+  			}
+  		})
 		//调起微信支付
-		this.$router.push('/register_result')
+		//this.$router.push('/register_result')
+		function onBridgeReady(){
+		   WeixinJSBridge.invoke(
+		       'getBrandWCPayRequest', {
+		           "appId":"wx2421b1c4370ec43b",     //公众号名称，由商户传入     
+		           "timeStamp":"1395712654",         //时间戳，自1970年以来的秒数     
+		           "nonceStr":"e61463f8efa94090b1f366cccfbbb444", //随机串     
+		           "package":"prepay_id=u802345jgfjsdfgsdg888",     
+		           "signType":"MD5",         //微信签名方式：     
+		           "paySign":"70EA570631E4BB79628FBCA90534C63FF7FADD89" //微信签名 
+		       },
+		       function(res){     
+		           if(res.err_msg == "get_brand_wcpay_request:ok" ) {}     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+		       }
+		   ); 
+		}
+		if (typeof WeixinJSBridge == "undefined"){
+		   if( document.addEventListener ){
+		       document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+		   }else if (document.attachEvent){
+		       document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+		       document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+		   }
+		}else{
+		   onBridgeReady();
+		} 
   	},
-  	notEnoughPopup(){
+  	notEnoughPopup(num){
   		MessageBox({
 		  title: '提示',
-		  message: '当前剩余名额不足(余2人)<br>无法进行预约',
+		  message: `当前剩余名额不足(余${num}人)<br>无法进行预约`,
 		  //showCancelButton: true
 		});
   	}
