@@ -5,7 +5,7 @@
 			<img src="../../assets/images/success.png"  alt="">
 			已成功预约
 		</p>
-		<p class="info">您的预约时间为：2017年9月22日(周四)<br>下午您的号码为：15，16，17</p>
+		<p class="info">您的预约时间为：2017年9月22日(周四)<br>下午您的号码为：{{orderId}}</p>
 		<div class="btn_group">
 			<router-link to="/" class="btn_l">返回首页</router-link >
 			<router-link to="/register_search"class="btn_r">查看详情</router-link >
@@ -20,8 +20,11 @@ export default {
 	},
 	data () {
 		return {
-			msg: 'Welcome to Your Vue.js App'
+			orderId: ''
 		}
+	},
+	created(){
+		this.orderId  = this.$route.query.orderId
 	},
 	beforeRouteLeave(to, from, next){
 		console.log(to,from)

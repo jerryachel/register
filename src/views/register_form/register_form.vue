@@ -109,10 +109,11 @@ export default {
   	//添加预约人
   	add_appointment(){
   		let appointment = {
-  			name:'',
-  			phone:'',
-  			address:'',
-  			sex:'man'
+  			contactId:'',
+  			contactName:'',
+  			contactMobile:'',
+  			contactAddress:'',
+  			sex:0
   		}
   		this.appointment.push(appointment)
 		this.$nextTick(function () {
@@ -172,11 +173,24 @@ export default {
   					}
   				}).then(({data})=>{
   					wxConfig = data.model
+  					//onBridgeReady()
+  					if (typeof WeixinJSBridge == "undefined"){
+					   if( document.addEventListener ){
+					       document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+					   }else if (document.attachEvent){
+					       document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+					       document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+					   }
+					}else{
+					   onBridgeReady();
+					} 
+					this.confirmOrder(3)
   				})
   			}
   		})
+
 		//调起微信支付
-		//this.$router.push('/register_result')
+		
 		function onBridgeReady(){
 		   WeixinJSBridge.invoke(
 		       'getBrandWCPayRequest', {
@@ -189,21 +203,12 @@ export default {
 		       },
 		       function(res){     
 		           if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-
+		           		console.log(this)
 		           }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
 		       }
 		   ); 
 		}
-		if (typeof WeixinJSBridge == "undefined"){
-		   if( document.addEventListener ){
-		       document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
-		   }else if (document.attachEvent){
-		       document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
-		       document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
-		   }
-		}else{
-		   onBridgeReady();
-		} 
+
   	},
   	notEnoughPopup(num){
   		MessageBox({
@@ -213,7 +218,20 @@ export default {
 		});
   	},
   	confirmOrder(orderId){
-  		axios.post('clinic/order.do',{})
+  		let _this = this
+  		axios.post('clinic/order.do',{
+  			wxOrderId:orderId,
+  			dateTime:_this.$route.query.date,
+  			configClass:_this.$route.query.time == 'morning'? 0 : 1,
+  			contactInfoDTOs:_this.appointment
+  		}).then(({data})=>{
+  			this.$router.push({
+  				path: '/register_result',
+  				query:{
+  					orderId:2
+  				}
+  			})
+  		})
   	}
 
 
