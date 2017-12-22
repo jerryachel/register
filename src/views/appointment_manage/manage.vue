@@ -1,23 +1,24 @@
 <template>
 	<div class="manage">
 		<nav-top title="常用预约人管理"></nav-top>
-		<p v-if="manage_list.length == 0 " class="no_content">-- 暂无常用联系人 --</p>
-		<ul v-infinite-scroll="loadMore" class="manage_list_wrap">
+		<ul v-cloak class="manage_list_wrap">
 			<li v-for="(item, index ) in manage_list" :key="index" class="manage_list">
 				<div class="list_content">
 					<p class="manage_list_name">
-						<span>小陈（男）</span>
-						<span>13555555555</span>
+						<span>{{item.contactName}}（{{item.sex?'女':'男'}}）</span>
+						<span>{{item.contactMobile}}</span>
 					</p>
-					<p>澄海区XXXXXXXXXXXXXXXX</p>
+					<p>{{item.contactAddress}}</p>
 				</div>
-				<div @click="delete_manage()" class="delete_btn">删除</div>
+				<div @click="delete_manage(index,item.contactId)" class="delete_btn">删除</div>
 			</li>
 		</ul>
+		<p v-cloak v-if="manage_list.length == 0 " class="no_content">-- 暂无常用联系人 --</p>
 		<router-link to="/add" class="add_manage">新增</router-link>
 	</div>
 </template>
 <script>
+import axios from '../../service/axios.js'
 import navTop from '../../components/nav.vue'
 import {MessageBox} from 'mint-ui'
 export default {
@@ -29,20 +30,24 @@ export default {
 			manage_list:[]
 		}
 	},
+	created(){
+		axios.get('clinic/queryAllContact.do').then(({data})=>{
+			let res = data.model
+			this.manage_list = res
+		})
+	},
 	methods:{
-		loadMore(){
-			this.loading = true
-			console.log(1111111)
-			this.manage_list.push({
-				name:'小陈ghahahahahahah',
-				sex:'男',
-				phone:'13555555555',
-				address:'澄海区XXXXXXXXXXXXXXXX'
-			})
-		},
-		delete_manage(i){
+		delete_manage(i,id){
 			MessageBox.confirm('确定删除该常用预约人?').then(action => {
-				this.manage_list.splice(i,1)
+				axios.get('clinic/deleteContact.do',{
+					params:{
+						contactId:id
+					}
+				}).then(({data})=>{
+					console.log(data)
+					this.manage_list.splice(i,1)
+				})
+				
 			},()=>{
 				console.log('cancel')
 			});

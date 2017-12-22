@@ -21,6 +21,7 @@
 	</div>
 </template>
 <script>
+import axios from '../../service/axios.js'
 import navTop from '../../components/nav.vue'
 import {Field,MessageBox} from 'mint-ui'
 export default {
@@ -46,7 +47,21 @@ export default {
 					return false
 				}
 			}
-			console.log(this.info)
+			let reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证手机规则
+			if (!reg.test(this.info.phone)) {
+				MessageBox.alert('请输入正确的手机号码')
+				return false
+			}
+			axios.post('clinic/addContact.do',{
+				contactName:this.info.name,
+				contactMobile:this.info.phone,
+				contactAddress:this.info.address,
+				sex:this.info.sex == 'man'? 0 : 1
+			}).then(({data})=>{
+				MessageBox.alert('新增成功').then(action => {
+					this.$router.push('/manage')
+				});
+			})
 		}
 	}
 }
