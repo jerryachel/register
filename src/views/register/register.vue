@@ -130,10 +130,10 @@ export default {
   		//下午
     	//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
   		if (this.nightLeft != 0 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22 && this.nightLeft != 0) ) {
-  			console.log('yes')
+  			//console.log('yes')
   			this.afternoonIsDisabled = false
   		}else{
-  			console.log('no')
+  			//console.log('no')
   			this.afternoonIsDisabled =  true
   		}
 
