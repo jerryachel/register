@@ -13,14 +13,14 @@ let timer
 let flag = true
 // request拦截器
 service.interceptors.request.use(config => {
-  timer = setTimeout(function(){
-    if (flag) { 
-      console.log('t1')     
+  // timer = setTimeout(function(){
+  //   console.log(flag)
+  //   if (flag) {
       Indicator.open({
         spinnerType: 'double-bounce'
       })
-    }
-  },500)
+  //   } 
+  // },500)
   // Do something before request is sent
 
   return config;
@@ -33,9 +33,9 @@ service.interceptors.request.use(config => {
 // respone拦截器
 service.interceptors.response.use(
   response => {
-    clearTimeout(timer)
+    /*console.log('t2') 
     flag = false
-    console.log('t2') 
+    clearTimeout(timer)*/
     Indicator.close()
     return response
   },

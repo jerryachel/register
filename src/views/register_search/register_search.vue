@@ -1,75 +1,54 @@
 <template>
 	<div class="search_container">
 		<nav-top title="挂号查询"></nav-top>
-		<p v-if="register_list.length == 0 " class="no_content">-- 暂无常用联系人 --</p>
-		<ul v-infinite-scroll="loadMore"  class="register_list_wrap">
+		
+		<ul v-cloak class="register_list_wrap">
 			<li :key="index" v-for="(item,index) in register_list" class="register_list">
 				<p class="list_title">
-					<span>{{item.time}}</span>
-					<span>号码：{{item.num}}</span>	
+					<span>{{item.recordTime}}</span>
+					<span>号码：{{item.registerNumber}}</span>	
 				</p>
 				<p class="list_name">
-					<span>姓名：{{item.name}}</span>
-					<span>性别：{{item.sex}}</span>
+					<span>姓名：{{item.contactName}}</span>
+					<span>性别：{{item.sex?'女':'男'}}</span>
 				</p>
-				<p>电话：{{item.phone}}</p>
-				<p>地址：{{item.address}}</p>
+				<p>电话：{{item.contactMobile}}</p>
+				<p>地址：{{item.contactAddress}}</p>
 			</li>
 		</ul>
+		<p v-cloak v-if="register_list.length == 0 " class="no_content">-- 暂无常用联系人 --</p>
 	</div>
 </template>
 <script>
 import navTop from '../../components/nav.vue'
+import axios from '../../service/axios.js'
 export default {
 	components: {
 		navTop:navTop
 	},
 	data(){
 		return {
-			register_list:[{
-				time:'2017月09月20日(周四)下午',
-				num:12,
-				name:'小陈',
-				sex:'男',
-				phone:'13555555555',
-				address:'澄海区XXXXXXXXXXXXXXXX'
-			},{
-				time:'2017月09月20日(周四)下午',
-				num:12,
-				name:'小陈',
-				sex:'男',
-				phone:'13555555555',
-				address:'澄海区XXXXXXXXXXXXXXXX'
-			},{
-				time:'2017月09月20日(周四)下午',
-				num:12,
-				name:'小陈',
-				sex:'男',
-				phone:'13555555555',
-				address:'澄海区XXXXXXXXXXXXXXXX'
-			},{
-				time:'2017月09月20日(周四)下午',
-				num:12,
-				name:'小陈',
-				sex:'男',
-				phone:'13555555555',
-				address:'澄海区XXXXXXXXXXXXXXXX'
-			}],
-			loading:false
+			register_list:[],
 		}
 	},
+	created(){
+		this.loadList()
+	},
 	methods:{
-		loadMore(){
-			this.loading = true
-			console.log(1111111)
-			this.register_list.push({
-				time:'2017月09月20日(周四)下午',
-				num:12,
-				name:'小陈ghahahahahahah',
-				sex:'男',
-				phone:'13555555555',
-				address:'澄海区XXXXXXXXXXXXXXXX'
-			})
+		loadList(){
+			let week = new Array("日", "一", "二", "三", "四", "五", "六")
+			axios.get('clinic/orderQuery.do').then(({data})=>{
+				let res = data.model
+				for(let i in res){
+					let fullDay = res[i].recordTime
+					res[i].recordTime = res[i].recordTime.replace(new RegExp("-","gm"),"/")
+					let day = week[new Date(res[i].recordTime).getDay()]
+					fullDay = `${fullDay}（周${day}）${res[i].recordClass == 100?'上午':'下午'}`
+					console.log(fullDay)
+					res[i].recordTime = fullDay
+				}
+				this.register_list = res
+			})	
 		}
 	}
 }	
@@ -81,6 +60,10 @@ export default {
 	padding-top: px(80);
 	.register_list_wrap{
 	
+	}
+	.no_content{
+		text-align: center;
+		margin-top: px(50);
 	}
 	.register_list{
 		width: 90%;

@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-	<img class="banner" src=""  alt="">
+	<!-- <img class="banner" src=""  alt=""> -->
 	<div class="index_link">
 		<router-link to="/register" class="link_btn link_btn1">
 			<img src="../assets/images/icon1.png" alt="">
@@ -52,7 +52,8 @@ export default {
 	display: flex;
 	flex-direction:column;
 	align-items:center;
-
+	justify-content:center;
+	height: 100vh;
 	.link_btn1{
 		animation: slideInRight .8s .2s both 1;
 	}

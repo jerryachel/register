@@ -225,10 +225,12 @@ export default {
   			configClass:_this.$route.query.time == 'morning'? 0 : 1,
   			contactInfoDTOs:_this.appointment
   		}).then(({data})=>{
+  			let res = data.model
+  			res = res.join(',')
   			this.$router.push({
   				path: '/register_result',
   				query:{
-  					orderId:2
+  					registerId:res
   				}
   			})
   		})
