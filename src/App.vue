@@ -5,8 +5,20 @@
 </template>
 
 <script>
+import axios from './service/axios.js'
 export default {
-  name: 'app'
+	name: 'app',
+	created(){
+		let openId = this.$route.query.openId || sessionStorage.getItem('uid')
+		sessionStorage.setItem('uid', openId);
+		console.log(openId)
+		axios.get('clinic/login.do',{
+			params:{
+				openId:openId
+			}
+		})
+	}
+
 }
 </script>
 

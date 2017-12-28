@@ -5,9 +5,9 @@ import { Indicator } from 'mint-ui';
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: 'https://www.easy-mock.com/mock/5a37185dbfa5810890024b9f/register/', // api的base_url
+  baseURL: 'http://gzbige.free.ngrok.cc/', // api的base_url
   timeout: 10000, // 请求超时时间
-  //withCredentials:true
+  withCredentials:true
 });
 let timer
 let flag = true
@@ -67,6 +67,7 @@ service.interceptors.response.use(
   //       return response.data;
   //     }
   error => {
+    Indicator.close()
     console.log('err' + error); // for debug
     MessageBox.alert('获取数据失败，请刷新重试')
     return Promise.reject(error);

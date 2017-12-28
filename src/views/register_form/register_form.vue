@@ -39,7 +39,8 @@
 			<div v-show="popupVisible" class="popup_container">
 				<p class="popup_title"><span @click="popupVisible = false">取消</span>使用预约人</p>
 				<div class="popup_content">
-					<ul>
+					<p v-cloak v-if="!info" class="no_content">-- 暂无常用联系人 --</p>
+					<ul v-else>
 						<li  v-for="(item, index) in info"  class="popup_list">
 							<div class="list_info">
 								<p>
@@ -91,7 +92,6 @@ export default {
 	//获取常用联系人
 	axios.get('clinic/queryAllContact.do').then(({data})=>{
 		let res = data.model
-		console.log(res)
 		this.info = res
 	})
   },
@@ -133,6 +133,7 @@ export default {
   	},
   	//提交前验证
   	comfirmValidate(){
+
   		let len = this.appointment.length
   		if (len == 0) {
   			MessageBox.alert('请添加预约人')
@@ -140,7 +141,7 @@ export default {
   		}else{
   			for(let i = 0 ; i < this.appointment.length; i++){
   				for(var key in this.appointment[i]){
-  					if (this.appointment[i][key] == '') {
+  					if (this.appointment[i][key] === '' && key != "contactId") {
   						MessageBox.alert('请完整填写预约人信息后再提交')
   						return false
   					}
@@ -184,7 +185,7 @@ export default {
 					}else{
 					   onBridgeReady();
 					} 
-					this.confirmOrder(3)
+					//this.confirmOrder(3)
   				})
   			}
   		})
@@ -397,6 +398,10 @@ export default {
 		-webkit-overflow-scrolling: touch;
 		overflow: auto;
 		padding:0 px(20) px(80);
+	}
+	.no_content{
+		text-align: center;
+		margin-top: px(50);
 	}
 	.popup_list{
 		width: 100%;

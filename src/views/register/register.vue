@@ -56,13 +56,40 @@ export default {
     }
   },
   created(){
-  	this.getDaySource()
+  	axios.get('clinic/daySource.do',{
+		params:{
+			date: ''
+		}
+	}).then(({data})=>{
+		let res = data.model
+		this.morningLeft = res.morningLeft
+		this.nightLeft = res.nightLeft
+		//首次请求时，获取当天时间的时分秒并执行计时器
+	  	//res.currentDay ='2012-12-25 20:17:24';
+	    //res.currentDay = res.currentDay.replace(new RegExp("-","gm"),"/")
+	    this.timer = new Date(res.currentDay)
+	    let date = new Date(res.currentDay)
+	    let aWeek = new Array("日", "一", "二", "三", "四", "五", "六")
+	  	//获取未来七天
+	  	for(let i = 0 ;i<7;i++){
+	  		this.fullDate.push(date.Format('yyyy-MM-dd'))
+	  		this.date.push(date.getDate()) 
+	  		this.week.push(aWeek[date.getDay()])
+	  		
+	  		date.setDate(date.getDate()+1)
+	  	}
+	  	this.count(this.timer)
+	})
   },
   watch:{
   	//改变预约时间时获取数据
   	curChoose:function(i){
-  		console.log(i)
-  		this.getDaySource(this.fullDate[i])
+  		if (i == 0) {
+  			this.getDaySource()
+  		}else{
+  			this.getDaySource(this.fullDate[i])
+  		}
+  		
   	}
   },
   methods:{
@@ -71,8 +98,7 @@ export default {
   		this.curChoose = i
   		//重置选择上午下午
   		this.curTime = ''
-  		//console.log(day)
-  		this.checkTime()
+  		
   	},
   	//获取号源
   	getDaySource(day){
@@ -81,28 +107,10 @@ export default {
 				date:day || ''
 			}
 		}).then(({data})=>{
-			console.log(data)
 			let res = data.model
 			this.morningLeft = res.morningLeft
 			this.nightLeft = res.nightLeft
-			//首次请求时，获取当天时间的时分秒并执行计时器
-			if (day == undefined) {
-			  	//res.currentDay ='2012-12-25 20:17:24';
-			    res.currentDay = res.currentDay.replace(new RegExp("-","gm"),"/")
-			    this.timer = new Date(res.currentDay)
-			    let date = new Date(res.currentDay)
-			    let aWeek = new Array("日", "一", "二", "三", "四", "五", "六")
-			  	//获取未来七天
-			  	for(let i = 0 ;i<7;i++){
-			  		console.log(date.getDate(),i)
-			  		this.fullDate.push(date.Format('yyyy-MM-dd'))
-			  		this.date.push(date.getDate()) 
-			  		this.week.push(aWeek[date.getDay()])
-			  		
-			  		date.setDate(date.getDate()+1)
-			  	}
-			  	this.count(this.timer)
-			}
+			this.checkTime()
 		})
   	},
   	//计时器
@@ -110,7 +118,7 @@ export default {
   		this.checkTime()
   		this.timeout = setTimeout(()=>{
 			this.timer = new Date(serverTime.getTime()+1000)
-			//console.log(this.timer)
+			console.log(this.timer)
 	  		this.count(this.timer)
   		},1000)
   	},
@@ -122,11 +130,12 @@ export default {
   		//console.log(now)
   		//上午
   		//有剩余号源 且 (选中日期为当天 且 时间在9点前) || (选中日期不为当天 且 时间在7点~22点) 
-  		if (this.morningLeft != 0 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22 && this.morningLeft != 0)){  	
+  		if (this.morningLeft != 0 && (this.date[this.curChoose] == now.getDate() && hours < 9) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22 && this.morningLeft != 0)){
 			this.morningIsDisabled = false
   		}else{
   			this.morningIsDisabled = true
   		}
+
   		//下午
     	//有剩余号源 且 (选中日期为当天 且 时间在17:30前) || (选中日期不为当天 且 时间在7点~22点)
   		if (this.nightLeft != 0 && (this.date[this.curChoose] == now.getDate() && (hours < 17 || (hours==17 && minute<30 ))) || (this.date[this.curChoose] != now.getDate() && hours > 7 && hours <22 && this.nightLeft != 0) ) {
@@ -136,7 +145,6 @@ export default {
   			//console.log('no')
   			this.afternoonIsDisabled =  true
   		}
-
   	},
   	//确认提交
   	comfirm(){
@@ -161,11 +169,10 @@ export default {
   		}
   	}
   },
-    beforeRouteLeave(to, from, next){
-  	console.log(to, from)
-  	clearTimeout(this.timeout)
-  	next()
-  },
+	beforeRouteLeave(to, from, next){
+		clearTimeout(this.timeout)
+		next()
+	}
 }
 	
 </script>
@@ -211,7 +218,7 @@ export default {
 		color:#333;
 		margin: px(100) 0 0;
 		position: relative;
-		transition:all ease .3s;
+		//transition:all ease .3s;
 		overflow: hidden;
 		.chosen_bg{
 			width: px(750);
