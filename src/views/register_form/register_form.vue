@@ -5,7 +5,7 @@
 			<p v-cloak class="register_info">
 				所选时间：{{$route.query.date}}（周{{$route.query.week}}）&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}<br>
 				为 {{this.appointment.length}} 人进行了预约操作<br>
-				预约费用为：{{price}} 元（成功支付后挂号费用不予退还）
+				预约费用为：{{totalPrice}} 元（成功支付后挂号费用不予退还）
 			</p>
 			<transition-group name="appointment">
 				<div class="appointment" v-for="(item , index) in appointment" :key="index">
@@ -81,6 +81,11 @@ export default {
   		currentAppointment:0,
   		price:'',
   		info:[]
+  	}
+  },
+  computed:{
+  	totalPrice:function(){
+  		return this.appointment.length * parseFloat(this.price)
   	}
   },
   created(){
@@ -170,7 +175,7 @@ export default {
   			}else{
   				axios.get('/pay/preparePay.do',{
   					params:{
-  						total_fee:4.5
+  						total_fee:totalPrice
   					}
   				}).then(({data})=>{
   					wxConfig = data.model
