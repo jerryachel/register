@@ -39,7 +39,7 @@
 			<div v-show="popupVisible" class="popup_container">
 				<p class="popup_title"><span @click="popupVisible = false">取消</span>使用预约人</p>
 				<div class="popup_content">
-					<p v-cloak v-if="!info" class="no_content">-- 暂无常用联系人 --</p>
+					<p v-cloak v-if="info.length == 0" class="no_content">-- 暂无常用联系人 --</p>
 					<ul v-else>
 						<li  v-for="(item, index) in info"  class="popup_list">
 							<div class="list_info">
@@ -79,7 +79,7 @@ export default {
   		}],
   		popupVisible:false,
   		currentAppointment:0,
-  		price:'',
+  		price:0,
   		info:[]
   	}
   },
@@ -163,6 +163,7 @@ export default {
   	},
   	enoughPopup(){
   		let wxConfig
+  		let _this = this
   		axios.get('clinic/numberLeft.do',{
   			params:{
 				dateTime:this.$route.query.date,
@@ -175,7 +176,7 @@ export default {
   			}else{
   				axios.get('/pay/preparePay.do',{
   					params:{
-  						total_fee:totalPrice
+  						total_fee:this.totalPrice
   					}
   				}).then(({data})=>{
   					wxConfig = data.model
@@ -190,7 +191,6 @@ export default {
 					}else{
 					   onBridgeReady();
 					} 
-					//this.confirmOrder(3)
   				})
   			}
   		})
@@ -198,7 +198,7 @@ export default {
 		//调起微信支付
 		
 		function onBridgeReady(){
-		   WeixinJSBridge.invoke(
+		    WeixinJSBridge.invoke(
 		       'getBrandWCPayRequest', {
 		           "appId":wxConfig.appId,     //公众号名称，由商户传入     
 		           "timeStamp":wxConfig.timeStamp,         //时间戳，自1970年以来的秒数     
@@ -206,13 +206,14 @@ export default {
 		           "package":wxConfig.prepayId,     
 		           "signType":wxConfig.signType,         //微信签名方式：     
 		           "paySign":wxConfig.paySign //微信签名 
-		       },
-		       function(res){     
-		           if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-		           		console.log(this)
-		           }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
-		       }
-		   ); 
+		        },
+		        function(res){    
+		       		//alert(res.err_msg) 
+		            if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+		           		_this.confirmOrder(wxConfig.wxOrderId)
+		            }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+		        }
+		    ); 
 		}
 
   	},
@@ -224,21 +225,27 @@ export default {
 		});
   	},
   	confirmOrder(orderId){
-  		let _this = this
   		axios.post('clinic/order.do',{
   			wxOrderId:orderId,
-  			dateTime:_this.$route.query.date,
-  			configClass:_this.$route.query.time == 'morning'? 0 : 1,
-  			contactInfoDTOs:_this.appointment
+  			dateTime:this.$route.query.date,
+  			configClass:this.$route.query.time == 'morning'? 0 : 1,
+  			contactInfoDTOs:this.appointment
   		}).then(({data})=>{
-  			let res = data.model
-  			res = res.join(',')
-  			this.$router.push({
-  				path: '/register_result',
-  				query:{
-  					registerId:res
-  				}
-  			})
+  			if (data.success) {
+	  			let res = data.model
+	  			res = res.join(',')
+	  			this.$router.push({
+	  				path: '/register_result',
+	  				query:{
+	  					registerId:res,
+	  					date:this.$route.query.date,
+	  					week:this.$route.query.week,
+  						time:this.$route.query.time
+	  				}
+	  			})
+  			}else{
+  				MessageBox.alert(data.errorMsg)
+  			}
   		})
   	}
 
@@ -407,6 +414,7 @@ export default {
 	.no_content{
 		text-align: center;
 		margin-top: px(50);
+		font-size: px(30)
 	}
 	.popup_list{
 		width: 100%;

@@ -5,7 +5,7 @@
 			<img src="../../assets/images/success.png"  alt="">
 			已成功预约
 		</p>
-		<p class="info">您的预约时间为：2017年9月22日(周四)<br>下午您的号码为：{{registerId}}</p>
+		<p class="info">您的预约时间为：{{this.$route.query.date}}(周{{$route.query.week}})&nbsp;&nbsp;{{$route.query.time=='morning'?'早班':'晚班'}}<br>您的号码为：{{this.$route.query.registerId}}</p>
 		<div class="btn_group">
 			<router-link to="/" class="btn_l">返回首页</router-link >
 			<router-link to="/register_search"class="btn_r">查看详情</router-link >
@@ -24,7 +24,7 @@ export default {
 		}
 	},
 	created(){
-		this.registerId  = this.$route.query.registerId
+		//this.registerId  = this.$route.query.registerId
 	},
 	beforeRouteLeave(to, from, next){
 		console.log(to,from)
@@ -61,7 +61,7 @@ export default {
 	.info{
 		text-align: center;
 		padding: 0 px(40);
-		font-size: px(36);
+		font-size: px(32);
 		line-height: 2
 	}
 	.btn_group{

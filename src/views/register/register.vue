@@ -118,7 +118,6 @@ export default {
   		this.checkTime()
   		this.timeout = setTimeout(()=>{
 			this.timer = new Date(serverTime.getTime()+1000)
-			console.log(this.timer)
 	  		this.count(this.timer)
   		},1000)
   	},

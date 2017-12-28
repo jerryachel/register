@@ -58,9 +58,13 @@ export default {
 				contactAddress:this.info.address,
 				sex:this.info.sex == 'man'? 0 : 1
 			}).then(({data})=>{
-				MessageBox.alert('新增成功').then(action => {
-					this.$router.push('/manage')
-				});
+				if (data.success) {
+					MessageBox.alert('新增成功').then(action => {
+						this.$router.push('/manage')
+					});
+				}else{
+					MessageBox.alert(data.errorMsg)
+				}
 			})
 		}
 	}
