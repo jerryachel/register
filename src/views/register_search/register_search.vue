@@ -16,7 +16,7 @@
 				<p>地址：{{item.contactAddress}}</p>
 			</li>
 		</ul>
-		<p v-cloak v-if="register_list.length == 0 " class="no_content">-- 暂无常用联系人 --</p>
+		<p v-cloak v-if="register_list.length == 0 " class="no_content">-- 暂无挂号单 --</p>
 	</div>
 </template>
 <script>
