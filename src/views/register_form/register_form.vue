@@ -112,7 +112,7 @@ export default {
         		target.scrollIntoView(false)
         		var scroll = document.querySelector('.register_form').scrollTop
         		document.querySelector('.register_form').scrollTo(0,scroll+document.querySelector('.comfirm_appointment').offsetHeight)
-        	},800)
+        	},0)
             /*let height  = target.getBoundingClientRect().top
             let scroll = document.querySelector('.register_form').scrollTop
             console.log(height,scroll)
