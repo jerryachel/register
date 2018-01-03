@@ -29,10 +29,10 @@
 					<img @click="deleteAppointment(index)" src="../../assets/images/delete.png" class="delete_appointment" alt="">
 				</div>
 			</transition-group >
-		</div>
-		<div class="register_btn_group">
-			<div @click="add_appointment" class="register_btn add_appointment">添加预约人</div>
-			<div @click="comfirmValidate" class="register_btn comfirm_appointment">确&nbsp;&nbsp;定</div>
+			<div class="register_btn_group">
+				<div @click="add_appointment" class="register_btn add_appointment">添加预约人</div>
+				<div @click="comfirmValidate" class="register_btn comfirm_appointment">确&nbsp;&nbsp;定</div>
+			</div>
 		</div>
 		<div v-show="popupVisible" @click="popupVisible = false" class="mask"></div>
 		<transition name="popup">
@@ -106,13 +106,23 @@ export default {
   		var ev = ev || window.event;
         var target = ev.target || ev.srcElement;
         if(target.className == 'mint-field-core'){
-        	
-        	console.log(111)
         	setTimeout(function(){
-        		target.scrollIntoView(false)
-        		var scroll = document.querySelector('.register_form').scrollTop
-        		document.querySelector('.register_form').scrollTo(0,scroll+document.querySelector('.comfirm_appointment').offsetHeight)
+				var result = []
+				var x = target
+				while (x.className != 'register_form') {
+				  result.push(x);
+				  x = x.parentNode;
+				}
+				console.log(result[4])
+				let form = result[4]
+        		form.scrollIntoView(false)
         	},0)
+        	// console.log(111)
+        	// setTimeout(function(){
+        	// 	target.scrollIntoView(false)
+        	// 	var scroll = document.querySelector('.register_form').scrollTop
+        	// 	document.querySelector('.register_form').scrollTo(0,scroll+document.querySelector('.comfirm_appointment').offsetHeight)
+        	// },0)
             /*let height  = target.getBoundingClientRect().top
             let scroll = document.querySelector('.register_form').scrollTop
             console.log(height,scroll)
@@ -146,7 +156,8 @@ export default {
   		}
   		this.appointment.push(appointment)
 		this.$nextTick(function () {
-			this.$refs.register_form.scrollTop = this.$refs.register_form.scrollHeight
+			//this.$refs.register_form.scrollTop = this.$refs.register_form.scrollHeight
+			window.scrollTo(0,document.body.scrollHeight)
 		})
   	},
   	//显示常用预约人弹层
@@ -281,19 +292,19 @@ export default {
 @import '../../assets/css/index.scss';
 .register_container{
 	width: 100%;
-	height: 100%;		
-	position: relative;
-	overflow: hidden;
+	//height: 100%;		
+	//position: relative;
+	//overflow: hidden;
 	color: #333;
 }
 .register_form{
 	width: 100%;
-	height: 100%;
+	min-height: 100vh;
 	background-color: #fff;
 	padding: px(80) px(40);
 	-webkit-overflow-scrolling: touch;
 	position: relative;
-	overflow: auto;
+	overflow-x: hidden;
 	.register_info{
 		font-size:px(30);
 		line-height: 2;
