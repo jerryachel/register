@@ -12,8 +12,8 @@
 					<p class="appointment_title">请填写预约人信息或者
 						<mt-button @click="showCommonAppointment(index)" type="primary" size="small">使用常用预约人</mt-button>
 					</p>
-					<mt-field label="您的名字" placeholder="请输入您的名字" v-model="item.contactName"></mt-field>
-					<mt-field label="您的电话" placeholder="请输入您的电话" v-model="item.contactMobile"></mt-field>
+					<mt-field label="您的名字" @focus.native="scrollToView" placeholder="请输入您的名字" v-model="item.contactName"></mt-field>
+					<mt-field ref="input1" label="您的电话" placeholder="请输入您的电话" v-model="item.contactMobile"></mt-field>
 					<mt-field label="您的地址" placeholder="请输入您的地址" v-model="item.contactAddress"></mt-field>
 					<div class="appointment_sex">
 						<span class="">您的性别</span>
@@ -100,7 +100,31 @@ export default {
 		this.info = res
 	})
   },
+  mounted(){
+  	let form = document.querySelector(".register_form")
+  	form.addEventListener('click',function(ev){
+  		var ev = ev || window.event;
+        var target = ev.target || ev.srcElement;
+        if(target.className == 'mint-field-core'){
+        	
+        	console.log(111)
+        	setTimeout(function(){
+        		target.scrollIntoView(false)
+        		var scroll = document.querySelector('.register_form').scrollTop
+        		document.querySelector('.register_form').scrollTo(0,scroll+document.querySelector('.comfirm_appointment').offsetHeight)
+        	},800)
+            /*let height  = target.getBoundingClientRect().top
+            let scroll = document.querySelector('.register_form').scrollTop
+            console.log(height,scroll)
+            //target.scrollIntoView(false)
+            document.querySelector('.register_form').scrollTo(0,scroll - height)*/
+        }
+  	})
+  },
   methods:{
+  	scrollToView(){
+  		console.log(456456)
+  	},
   	//删除预约人
   	deleteAppointment(i){
   		console.log(i)
