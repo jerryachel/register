@@ -116,7 +116,7 @@ export default {
 				console.log(result[4])
 				let form = result[4]
         		form.scrollIntoView(false)
-        	},0)
+        	},500)
         	// console.log(111)
         	// setTimeout(function(){
         	// 	target.scrollIntoView(false)
